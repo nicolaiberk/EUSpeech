@@ -19,17 +19,6 @@ from functions import langdetectspeeches
 
 inputcsv="Speeches/speeches_20200506-172749"
 outputcsv="Speeches/speechesCovidUpdate_LangDet"
-output= ["date",
-         "speaker",
-         "title",
-         "completelinks",
-         "text",
-         "lang",
-         "lang_prob",
-         "nooflanguages",
-         "lenspeech",
-         "lenspeech2",
-         "checkspeech"]
 
 langdetectspeeches(path,
                    inputcsv,
