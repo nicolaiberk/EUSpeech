@@ -13,7 +13,7 @@ import os
 from datetime import datetime as dt
 import re
 
-os.chdir(os.path.expanduser('~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate/Speeches'))
+os.chdir('ADD/PATH/HERE')
 
 with open('speeches_20200506-172749.csv',mode='a') as fo:
     with open('poland.csv',mode='r') as fi:

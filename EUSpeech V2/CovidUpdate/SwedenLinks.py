@@ -20,7 +20,7 @@ import os
 #%% Sweden
 # selenium
 
-linkpath = os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate/CompleteLinks/sweden06052020.csv")
+linkpath = 'ADD/PATH/HERE'
 
 fetchlink = 'https://www.government.se/speeches/'
 author="S.Loefven"

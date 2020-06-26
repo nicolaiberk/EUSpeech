@@ -7,7 +7,7 @@ import os
 import csv
 import re
 
-path=os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate/")
+path=os.path.expanduser("~/ADD/PATH/HERE")
 os.chdir(path)
 
 from functions import langdetectspeeches

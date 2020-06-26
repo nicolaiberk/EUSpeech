@@ -9,12 +9,12 @@ Speechcollection for Covid update
 """
 
 import os
-os.chdir(os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate"))
+os.chdir('ADD/PATH/HERE')
 import datetime
 from functions import SpeechScraper
 
 
-linkdir = os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate")
+linkdir = 'ADD/INPUT/PATH/HERE'
 dt=str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
 #%% CZ

@@ -9,7 +9,7 @@ Created on Fri Jul 19 15:01:24 2019
 import csv
 import os
 
-speechdir = os.path.expanduser('~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate/Speeches')
+speechdir = 'PATH/TO/SPEECHES'
 
 #%% write metafile
 
