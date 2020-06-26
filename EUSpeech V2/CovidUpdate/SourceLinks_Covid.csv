@@ -1,0 +1,19 @@
+﻿Country;Language;Speakers;Source;additional source 1
+NL;EN;M. Rutte;https://www.government.nl/government/members-of-cabinet/mark-rutte/documents?type=Speech&page=1;
+NL;NL;M. Rutte;https://www.rijksoverheid.nl/regering/bewindspersonen/mark-rutte/documenten?type=Toespraak&pagina=1;
+DE;EN;A. Merkel;https://www.bundeskanzlerin.de/bkin-en/news/864130!search?formState=eNptj8EOgjAMhl_F9MwBFA3ZTcU76tF4mKPgEthwKyohvLtFQ7h4-9t839-0h1wSnqQp0YPoIdnE0SoZU-FsDcK0VRUA2V8ahgAKqZBmNgZxgV22PTeI6g5XJhpZaiNJWzNSzr6YjtYBeJKOQISM2KLwSFP9o0XXTUNl1dc9_ltu65umVHOTUQgCliHwPYfeH55oaM-_lHbWvB0PAr5Hp6lkh3nKyCJHr1hUrXNsZbLkrmj4AJUjWvw&page=1;
+DE;DE;A. Merkel;https://www.bundeskanzlerin.de/bkin-de/aktuelles/70298!search?formState=eNptj8EOgjAMhl_F9MwBSdS4G4p31KPxMEeHJLDhVlRCeHc7DXrx9rf5vr_pAIUkPEhTogcxwCpO1kkI2tkGhOnqOgKynzSOEWipkL7oEsQJNnl6bBHVFc4MtLKsjKTKmgA5-2B4vojAk3QUIjNWa4801d86dP001Fa95f2_ZdpcKsoqrjIKQUASAx906P3ujoa2_Eppf5q34SLgMzhtLXssMkZmBXrFouqcYyuXJXcl4wtfGVrH&page=1;
+CZ;EN;A. Babis;https://www.vlada.cz/scripts/detail.php?pgid=1016&conn=10175&pg=&conn=10175&pg=1;
+CZ;CZ;A. Babis;https://www.vlada.cz/scripts/detail.php?pgid=1013&conn=10155&pg=&conn=10155&pg=1;
+FR;FR;E. Macron;https://www.vie-publique.fr/recherche?search_api_fulltext=emmanuel%20macron&sort_by=field_update_date&f%5B0%5D=categories%3Adiscours&f%5B0%5D=categories%3Adiscours&page=0;
+IT;IT;G. Conte;http://www.governo.it/it/interventi?page=0;
+DK;EN;M. Frederiksen;http://www.stm.dk/index.dsp?page=11004&action=page_overview_search&l1_valg=3420&l2_valg=3440;http://www.stm.dk/index.dsp?page=11004&action=page_overview_search&l1_valg=3420&l2_valg=3421
+DK;EN;L. Rasmussen;http://www.stm.dk/index.dsp?page=11004&action=page_overview_search&l1_valg=3175&l2_valg=3421;
+DK;DK;M. Frederiksen;http://www.stm.dk/index.dsp?page=7990&action=page_overview_search&l1_valg=3406&l2_valg=3433;http://www.stm.dk/index.dsp?page=7990&action=page_overview_search&l1_valg=3406&l2_valg=3413
+DK;DK;L. Rasmussen;http://www.stm.dk/index.dsp?page=7990&action=page_overview_search&l1_valg=3168&l2_valg=3413;
+NO;EN;E. Solberg;https://www.regjeringen.no/en/whatsnew/speeches_articles/id1334/?ownerid=875&page=1;
+NO;NO;E. Solberg;https://www.regjeringen.no/no/aktuelt/taler_artikler/id1334/?ownerid=875&page=1;
+EE;EN;J. Ratas;https://www.valitsus.ee/en/news?title=&title_op=allwords&source=23&date=All&date_custom%5Bmin%5D=&date_custom%5Bmax%5D=&field_news_subject_tid_i18n=139&page=1;
+EE;EE;J. Ratas;https://www.valitsus.ee/et/uudised?title=&title_op=allwords&source=23&date=All&date_custom%5Bmin%5D=&date_custom%5Bmax%5D=&field_news_subject_tid_i18n=139&page=1;
+UK;EN;B. Johnson;https://www.gov.uk/search/news-and-communications?order=updated-newest&page={}&people%5B%5D=boris-johnson;
+UK;EN;T. May;https://www.gov.uk/search/news-and-communications?order=updated-newest&page={}&people%5B%5D=theresa-may&public_timestamp%5Bto%5D=24%2F7%2F2019;
