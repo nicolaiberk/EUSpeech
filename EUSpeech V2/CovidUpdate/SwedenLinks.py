@@ -8,18 +8,12 @@ LInk COllection Covid: Tricky Cases
 @author: Nicolai Berk
 """
 
-# from lxml import html
 from urllib import request
 from random import randint
 import time
 import re
-# import math
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-# from selenium.common.exceptions import WebDriverException
-# from selenium.common.exceptions import TimeoutException
-# from selenium.webdriver.chrome.options import Options
-# import datetime
 import csv
 import os
 
@@ -231,9 +225,4 @@ with open(linkpath+"deadlinks", mode="a", encoding="utf-8") as fo:
     for link in deadlinks:
         writer.writerow(link)
 
-#%% Greece
-# use selenium here: https://primeminister.gr/category/activity/speeches
 
-
-#%% Spain
-# selenium here: https://www.lamoncloa.gob.es/presidente/intervenciones/Paginas/index.aspx?mts=202004

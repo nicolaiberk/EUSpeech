@@ -11,7 +11,7 @@ Speechcollection for Covid update
 import os
 os.chdir(os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate"))
 import datetime
-from ScraperFunction import SpeechScraper
+from functions import SpeechScraper
 
 
 linkdir = os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate")

@@ -10,7 +10,7 @@ Updated Link Collection Leader Speeches III
 
 import os
 os.chdir(os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate"))
-from ScraperFunction import linkScraper
+from functions import linkScraper
 import datetime
 
 linkdir=os.path.expanduser("~/Dropbox/Studium/Amsterdam/Gijs/CovidUpdate/CompleteLinks/")
