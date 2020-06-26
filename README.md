@@ -9,6 +9,6 @@ The code is structured as follows:
   - [**Original**](https://github.com/nicolaiberk/EUSpeech/tree/master/EUSpeech%20V2/Original) contains the code used for the first collection in summer 2019.
   - [**CovidUpdate**](https://github.com/nicolaiberk/EUSpeech/tree/master/EUSpeech%20V2/CovidUpdate) contains additional files of a collection in spring 2020.
   
-Additionally, the folder [EUSpeech Future Collections](https://github.com/nicolaiberk/EUSpeech/tree/master/EUSpeech%20Future%20Collections) contains a guide on how to collect data using the functions developed as part of this project, together with example code[^1].
+Additionally, the folder [EUSpeech Future Collections](https://github.com/nicolaiberk/EUSpeech/tree/master/EUSpeech%20Future%20Collections) contains a guide on how to collect data using the functions developed as part of this project, together with example code<sup>1</sup>.
 
-[^1] If you use these functions to collect data outside of this project, please contact the authors of EUSpeech.
+<sup>1</sup>: If you use these functions to collect data outside of this project, please contact the authors of EUSpeech.
