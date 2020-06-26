@@ -11,4 +11,8 @@ The code is structured as follows:
   
 Additionally, the folder [EUSpeech Future Collections](https://github.com/nicolaiberk/EUSpeech/tree/master/EUSpeech%20Future%20Collections) contains a guide on how to collect data using the functions developed as part of this project, together with example code<sup>1</sup>.
 
+<<<<<<< HEAD
 <sup>1</sup>: If you use these functions to collect data outside of this project, please contact the authors of EUSpeech.
+=======
+[^1]: If you use these functions to collect data outside of this project, please contact the authors of EUSpeech.
+>>>>>>> 0d5127a06cdc10c21f4ff0db8c1d2e986301b4ea
