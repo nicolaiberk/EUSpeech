@@ -1,5 +1,0 @@
-Automated collection and distribution of EUSpeech
- - Collect using functions
- - regular Update using TaskScheduler
- - mail report using SMTP_SSL()
- - Display using shiny
