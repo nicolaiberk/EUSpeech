@@ -31,6 +31,10 @@ def linkScraper(file,
                 xpathTitles,
                 xpathDates, 
                 strToDates,
+                country,
+                xpathSpeech, 
+                regexSpeech, 
+                regexControl,
                 linkbase='',  
                 regexDates='(.*)', 
                 mindate=None,
@@ -39,7 +43,6 @@ def linkScraper(file,
                 maxpage=0,   
                 npage=1,     
                 start=1,
-                country=None,
                 mode='w'
                 ):
     
@@ -78,8 +81,15 @@ def linkScraper(file,
     # open csvs we want to write to
     with open(path + file + '.csv', mode=mode, encoding="utf-8") as fo:
         writer=csv.writer(fo, lineterminator='\n')
+        
+#         header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 
+#           'regexDate', 'strToDate', 'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process'
+#           'xpathSpeech', 'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
+#         writer.writerow(header)
+        
         with open(path + file + 'Deadpages.csv', mode="a", encoding="utf-8") as dl:
             dead_writer=csv.writer(dl, lineterminator='\n')
+
             
             print('\n\nFetching links ' + sender + '...')
             i = 0            
@@ -195,15 +205,13 @@ def linkScraper(file,
                             date = time.strftime("%d-%m-%Y", tmpdt)
                             link = linkbase + lk.get('href')                            
                             
-                            if country == None:
-                                output = [date, sender, tt, link]
-                            else:
-                                output = [date, country, sender, tt, link]
+                            output = [sender, fetchLink, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
+                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, dt, tt, link]
+     
                             writer.writerow(output)
                             dead_writer.writerow("0")
                             i += 1
-                        break
-                            
+                        break # break loop of 4 attempts if collection succesful
                         
                     # exceptions for errors
                     except requests.HTTPError:
@@ -238,14 +246,17 @@ def seleniumScraper(file,
                     xpathTitles,
                     xpathDates, 
                     strToDates,
-                    xpbutton=None,
+                    xpathSpeech, 
+                    regexSpeech, 
+                    regexControl,
+                    country,
+                    xpbutton,
+                    xpcookie,  
                     linkbase='',
-                    xpcookie = None,  
                     regexDates='(.*)', 
                     mindate=None,
                     maxdate=None,
                     language="english",
-                    country=None,
                     mode='w',
                     process = 'scrolling'):
 
@@ -271,6 +282,11 @@ def seleniumScraper(file,
 
     with open(path+file+'.csv', mode=mode, encoding="utf-8") as fo:
         writer=csv.writer(fo, lineterminator = '\n')
+        
+#         header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 
+#                   'regexDate', 'strToDate', 'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process'
+#                   'xpathSpeech', 'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
+#         writer.writerow(header)
 
         i = 1
         coll = 1
@@ -394,7 +410,8 @@ def seleniumScraper(file,
                 if time.strptime(mindate, "%d/%m/%Y") > tmpdt:
                     print(f"\n\tReached {mindate},  (min) stopping process after collection of {coll} elements.")
                     driver.close()
-                    sys.exit()
+                    x = False
+                    break
                 else:
                     pass
 
@@ -406,11 +423,8 @@ def seleniumScraper(file,
                     pass
 
 
-            if country == None:
-                output = [date, sender, tt, link]
-            else:
-                output = [date, country, sender, tt, link]
-
+            output = [sender, url, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
+                        country, language, 1, xpbutton, xpcookie, process, xpathSpeech, regexSpeech, regexControl, dt, tt, link]
             writer.writerow(output)
             coll += 1
             i += 1
@@ -420,7 +434,7 @@ def seleniumScraper(file,
 
 
 #%% Speechscraper
-def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, mode = 'w', min_len = 200, timestamp = False):
+def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, timestamp = False):
 
     print('Start fetching speeches...\n')
     
@@ -437,28 +451,27 @@ def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, 
         quit()
         
     deadlinks=[]
-    
-    with open(linkdir+inputfile+'.csv', mode="r",encoding="utf-8") as fi: # Change to correct directory before importing
-        with open(speechdir+"speeches"+now+".csv", mode=mode,encoding="utf-8") as fo: # Change to correct directory before importing
-            reader = csv.reader(fi,delimiter=",")
+
+    with open(linkdir+'/'+inputfile, mode="r",encoding="utf-8") as fi: 
+        with open(speechdir+"/speeches"+now+".csv", mode=mode,encoding="utf-8") as fo:
+            reader = csv.reader(fi,delimiter=",", lineterminator = '\n')
+            next(reader)# skip header
             writer = csv.writer(fo, lineterminator = '\n')
             for row in reader:
                 i+=1
-                if len(row) == 4:
-                    fetchlink = row[3]
-                    title = row[2]
-                    speaker= row[1]
                     
-                elif len(row) == 5:
-                    fetchlink = row[4]
-                    title = row[3]
-                    speaker = row[2]
 
-                else:
-                    print('InputError: Input format unknown, should be either [date,speaker,title,url] or [date,country,speaker,title,url]')
-                    break
+                speaker      = row[0]
+                url          = row[1]
+                linkbase     = row[2]
+                xpathSpeech  = row[14]
+                regexSpeech  = row[15] 
+                regexControl = row[16]
+                date         = row[17]
+                title        = row[18]
+                urlSpeech    = row[19]
 
-                if test_re != 0 and re.match(test_re, title) == None:
+                if (regexControl != '') and (re.match(regexControl, title) == None):
                     print(f'\n\tNot a speech, skipping {i}')
                     skip+=1
                     continue
@@ -466,30 +479,30 @@ def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, 
                     print("\tFetching speech #", str(i), '... (', inputfile , end = ")\r")
                 for attempt in range(3):
                     try:
-                        req = requests.get(fetchlink)
+                        req = requests.get(urlSpeech)
                         tree = html.fromstring(req.text)
 
                     except requests.exceptions.RequestException as e:
-                        print("Whoops, that went wrong, retrying page "+ fetchlink +" for "+ speaker)
+                        print("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
                         if attempt == 2:
-                            print("Fetching page " + fetchlink +" for "+ speaker + " "+ fetchlink + " failed due to " + e)
-                            deadlinks.append(fetchlink)
+                            print("Fetching page " + urlSpeech +" for "+ speaker + " "+ urlSpeech + " failed due to " + str(e))
+                            deadlinks.append(urlSpeech)
                             mis += 1
                         time.sleep(5)
                     except Exception as e:
-                        print("Whoops, that went wrong, retrying page "+ fetchlink +" for "+ speaker)
+                        print("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
                         if attempt == 2:
-                            print("Fetching page " + fetchlink +" for "+ speaker + " failed due to: "+ e)
-                            deadlinks.append(fetchlink)
+                            print("Fetching page " + urlSpeech +" for "+ speaker + " failed due to: "+ str(e))
+                            deadlinks.append(urlSpeech)
                             mis += 1
                         time.sleep(5)
                             
 
-                txt = tree.xpath(xpath)
+                txt = tree.xpath(xpathSpeech)
            
                 if txt == []:
-                    print('\n\nNo speech found for\n\t', fetchlink, '\n\t using xpath: \n\n', xpath)
-                    deadlinks.append(fetchlink)
+                    print('\n\nNo speech found for\n\t', urlSpeech, '\n\t using xpath: \n\n', xpathSpeech)
+                    deadlinks.append(urlSpeech)
                     mis += 1
                     continue
                     
@@ -505,9 +518,9 @@ def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, 
                 
                 cleantxt = re.sub("\r|\n|\t|\\xa0|\* \* \*"," ",txtstr.lstrip())
                 
-                if regex != 0:
+                if regexSpeech != '':
                     try:
-                        cleantxt=str(re.match(regex, cleantxt).group(1))
+                        cleantxt=str(re.match(regexSpeech, cleantxt).group(1))
                     except AttributeError:
                         pass
                 
@@ -515,7 +528,7 @@ def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, 
                 
                 if len(cleantxt) < min_len:
                     print('\tVery short speech: ', str(row), '\n\tSKIPPING SPEECH')
-                    deadlinks.append(fetchlink)
+                    deadlinks.append(urlSpeech)
                     mis += 1
                     continue
                 
@@ -525,7 +538,7 @@ def speechScraper(inputfile, linkdir, speechdir, xpath, regex = 0, test_re = 0, 
                 # time.sleep(randint(1,3))
     
     
-    with open(speechdir+"deadlinks"+now+".csv", mode="w",encoding="utf-8") as fo: # Change to correct directory before importing
+    with open(speechdir+"/deadlinks"+now+".csv", mode="w",encoding="utf-8") as fo: # Change to correct directory before importing
         writer = csv.writer(fo, lineterminator = '\n')
         for dl in deadlinks:
             writer.writerow(dl)  

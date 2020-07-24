@@ -30,19 +30,24 @@ report = ''
 prev_col = open('datestamp.txt', 'r').read()
 
 ## load csv with general links and definitions
-CollectLinks = pd.read_csv('CollectLinks.csv')
+CollectLinks = pd.read_csv('CollectLinks.csv', sep = ';')
 
 ## replace NaN
 CollectLinks = CollectLinks.where(pd.notnull(CollectLinks), None)
 
 
-## delete old links
-if os.path.exists(linkdir+"links.csv"):
-  os.remove(linkdir+"links.csv")
-
 ## subset
 standardLinks = CollectLinks[CollectLinks['selenium'] == 0]
 seleniumLinks = CollectLinks[CollectLinks['selenium'] == 1]
+
+## delete old file and write header for linkfile
+header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 'regexDate', 'strToDate', 
+          'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process', 'xpathSpeech', 
+          'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
+with open(linkdir+'links.csv', mode = 'w') as fi:
+    writer = csv.writer(fi, lineterminator = '\n')
+    writer.writerow(header)
+
 
 ## scrape links of normal websites (make this nicer with zip(cols))
 for index, row  in standardLinks.iterrows():    
@@ -59,34 +64,40 @@ for index, row  in standardLinks.iterrows():
                 mindate     = prev_col,
                 country     = row['country'],
                 language    = row['language'],
+                xpathSpeech = row['xpathSpeech'],
+                regexSpeech  = row['regexSpeech'], 
+                regexControl = row['regexControl'], 
                 mode        = 'a')
 
 
     
 ## scrape links with selenium, add to other links
 for index, row in seleniumLinks.iterrows():
-    seleniumScraper(file        = 'links', 
-                    path        = linkdir, 
-                    sender      = row['speaker'], 
-                    url         = row['url'], 
-                    linkbase    = row['linkbase'], 
-                    xpathLinks  = row['xpathLinks'], 
-                    xpathTitles = row['xpathTitles'], 
-                    xpathDates  = row['xpathDates'], 
-                    regexDates  = row['regexDates'], 
-                    strToDates  = row['strToDates'],
-                    mindate     = prev_col,
-                    country     = row['country'],
-                    language    = row['language'],
-                    xpbutton    = row['xpbutton'],
-                    xpcookie    = row['xpcookie'],
-                    process     = row['process'],
+    seleniumScraper(file         = 'links', 
+                    path         = linkdir, 
+                    sender       = row['speaker'], 
+                    url          = row['url'], 
+                    linkbase     = row['linkbase'], 
+                    xpathLinks   = row['xpathLinks'], 
+                    xpathTitles  = row['xpathTitles'], 
+                    xpathDates   = row['xpathDates'], 
+                    regexDates   = row['regexDates'], 
+                    strToDates   = row['strToDates'],
+                    mindate      = prev_col,
+                    country      = row['country'],
+                    language     = row['language'],
+                    xpbutton     = row['xpbutton'],
+                    xpcookie     = row['xpcookie'],
+                    process      = row['process'],
+                    xpathSpeech  = row['xpathSpeech'],
+                    regexSpeech  = row['regexSpeech'], 
+                    regexControl = row['regexControl'], 
                     mode        = 'a')
-
-
+    
 # run collection of speeches
-
-
+print('Running speech Collection...')
+speechScraper('links.csv', linkdir, speechdir, mode = 'a', min_len = 200)
+print('Finished Speechcollection')
 
 # run language recognition
 
