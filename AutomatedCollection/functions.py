@@ -203,7 +203,10 @@ def linkScraper(file,
                                     continue                                    
                                     
                             date = time.strftime("%d-%m-%Y", tmpdt)
-                            link = linkbase + lk.get('href')                            
+                            if linkbase != None:
+                                link = linkbase + lk.get('href')                            
+                            else:
+                                link = lk.get('href')
                             
                             output = [sender, fetchLink, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
                                       country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, dt, tt, link]
@@ -225,7 +228,7 @@ def linkScraper(file,
                             break
                     except Exception as e:
                         if attempt < 3:
-                            print('\n\t\t attempt #' + str(i) + '/' + str(attempt) + ',/t' + fetchLink + '\n\t\tdid not work (', e, '), retrying...')
+                            print('\n\t\t attempt #' + str(i) + '/' + str(attempt) + ', ' + fetchLink + '\n\t\tdid not work (', e, '), retrying...')
                             time.sleep(5)
                         else:
                             dead_writer.writerow(fetchLink)

@@ -30,7 +30,7 @@ report = ''
 prev_col = open('datestamp.txt', 'r').read()
 
 ## load csv with general links and definitions
-CollectLinks = pd.read_csv('CollectLinks.csv', sep = ';')
+CollectLinks = pd.read_csv('CollectLinks.csv', sep = ',')
 
 ## replace NaN
 CollectLinks = CollectLinks.where(pd.notnull(CollectLinks), None)
