@@ -42,8 +42,9 @@ def linkScraper(file,
                 language="english",
                 maxpage=0,   
                 npage=1,     
-                start=1,
-                mode='w'
+                start=None,
+                mode='w',
+                fmt_url = None
                 ):
     
     '''Scrapes links for subsequent collection from a website and writes them to a csv
@@ -75,7 +76,11 @@ def linkScraper(file,
     '''
 
 
-
+    if start == None:
+        start = 1
+        
+    if fmt_url == None:
+        fmt_url = True
 
     
     # open csvs we want to write to
@@ -101,7 +106,10 @@ def linkScraper(file,
                 
                 # define url
                 n+=1
-                fetchLink = url.format(n*npage)
+                if fmt_url == True:
+                    fetchLink = url.format(n*npage)
+                else:
+                    fetchLink = url 
                 
                 
                 # update progress bar

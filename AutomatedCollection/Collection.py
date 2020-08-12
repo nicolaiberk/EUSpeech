@@ -43,14 +43,14 @@ seleniumLinks = CollectLinks[CollectLinks['selenium'] == 1]
 ## delete old file and write header for linkfile
 header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 'regexDate', 'strToDate', 
           'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process', 'xpathSpeech', 
-          'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
+          'regexSpeech', 'regexControl', 'start', 'fmt_url', 'date', 'title', 'urlSpeech']
 with open(linkdir+'links.csv', mode = 'w') as fi:
     writer = csv.writer(fi, lineterminator = '\n')
     writer.writerow(header)
 
 
 ## scrape links of normal websites (make this nicer with zip(cols))
-for index, row  in standardLinks.iterrows():    
+for index, row  in standardLinks.iterrows(): 
     linkScraper(file        = 'links', 
                 path        = linkdir, 
                 sender      = row['speaker'], 
@@ -67,7 +67,9 @@ for index, row  in standardLinks.iterrows():
                 xpathSpeech = row['xpathSpeech'],
                 regexSpeech  = row['regexSpeech'], 
                 regexControl = row['regexControl'], 
-                mode        = 'a')
+                mode        = 'a',
+                start       = row['start'],
+                fmt_url     = row['fmt_url'])
 
 
     
