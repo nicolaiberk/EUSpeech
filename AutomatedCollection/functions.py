@@ -217,7 +217,7 @@ def linkScraper(file,
                                 link = lk.get('href')
                             
                             output = [sender, fetchLink, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
-                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, dt, tt, link]
+                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, start, fmt_url, dt, tt, link]
      
                             writer.writerow(output)
                             dead_writer.writerow("0")
