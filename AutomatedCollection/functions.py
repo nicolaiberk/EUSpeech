@@ -40,7 +40,6 @@ def linkScraper(file,
                 mindate=None,
                 maxdate=None,
                 language="english",
-                maxpage=0,   
                 npage=1,     
                 start=None,
                 mode='w',
@@ -62,7 +61,6 @@ def linkScraper(file,
     xpathDates: string, xpath to date elements    
     regexDates: string, regular expression to find date (matches first group)
     strToDates: string or list, pattern for strptime (will try all of them if list)
-    maxpage: integer, max number of pages that the scraper should go through when formatting url
     mindate: str, earliest date to be scraped, formatted in %d/%m/%Y, if undefined everything will be scraped
     language: string, language of date format, default is english. Supports german and italian.
     npage: integer, number to multiply by in case url formatting is not following pattern [0,1,2,3, ...]
@@ -87,36 +85,28 @@ def linkScraper(file,
     with open(path + file + '.csv', mode=mode, encoding="utf-8") as fo:
         writer=csv.writer(fo, lineterminator='\n')
         
-#         header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 
-#           'regexDate', 'strToDate', 'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process'
-#           'xpathSpeech', 'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
-#         writer.writerow(header)
         
         with open(path + file + 'Deadpages.csv', mode="a", encoding="utf-8") as dl:
             dead_writer=csv.writer(dl, lineterminator='\n')
 
             
             print('\n\nFetching links ' + sender + '...')
+            
             i = 0            
             n = start-1
+            run = True
             
             # loop through collection of pages
             
-            while n <= maxpage:
+            while run == True:
                 
                 # define url
                 n+=1
-                if fmt_url == True:
+                if bool(fmt_url) == True:
                     fetchLink = url.format(n*npage)
                 else:
                     fetchLink = url 
                 
-                
-                # update progress bar
-                if maxpage > 0:
-                    bar = str('\t\t[' + '='*int((n)/ (maxpage / 30)) + ' '*(30-int((n) / (maxpage / 30))) + ']   ' + str((n)) + '/' + str(maxpage))
-                    stdout.write('%s\r' % bar)
-                    stdout.flush()
                 
                 for attempt in range(4):
                     try:
@@ -134,7 +124,7 @@ def linkScraper(file,
                             pass
                         else:
                             print("Error, Lists of links, dates, and titles are not same length!")
-                            n=maxpage
+                            run = False
                             break
                         
                         # bind link, sender, title, and date of a given release and write it into csv
@@ -172,7 +162,21 @@ def linkScraper(file,
                                     dt = dt.replace('ottobre',    'October')
                                     dt = dt.replace('novembre',   'November')
                                     dt = dt.replace('dicembre',   'December')
-                
+                                    
+                                elif language.lower() == "swedish":
+                                    dt = dt.replace('januari',    'January')
+                                    dt = dt.replace('februari',   'February')
+                                    dt = dt.replace('mars',      'March')
+                                    dt = dt.replace('april',     'April')
+                                    dt = dt.replace('maj',     'May')
+                                    dt = dt.replace('juni',     'June')
+                                    dt = dt.replace('juli',     'July')
+                                    dt = dt.replace('augusti',     'August')
+                                    dt = dt.replace('september',  'September')
+                                    dt = dt.replace('oktober',    'October')
+                                    dt = dt.replace('november',   'November')
+                                    dt = dt.replace('december',   'December')
+                                    
                                 elif language.lower() == 'french':
                                     dt = dt.replace('janvier',        'January')
                                     dt = dt.replace('février',        'February')
@@ -202,7 +206,7 @@ def linkScraper(file,
                             if mindate != None:
                                 if time.strptime(mindate, "%d/%m/%Y") > tmpdt:
                                     print("\n\tReached ", mindate, " (min), stopping process...")
-                                    n=maxpage+1 #breaks iteration
+                                    run = False #breaks iteration
                                     break
                             
                             if maxdate != None:
@@ -386,6 +390,20 @@ def seleniumScraper(file,
                     dt = dt.replace('novembre',   'November')
                     dt = dt.replace('dicembre',   'December')
 
+                elif language.lower() == "swedish":
+                    dt = dt.replace('januari',    'January')
+                    dt = dt.replace('februari',   'February')
+                    dt = dt.replace('mars',      'March')
+                    dt = dt.replace('april',     'April')
+                    dt = dt.replace('maj',     'May')
+                    dt = dt.replace('juni',     'June')
+                    dt = dt.replace('juli',     'July')
+                    dt = dt.replace('augusti',     'August')
+                    dt = dt.replace('september',  'September')
+                    dt = dt.replace('oktober',    'October')
+                    dt = dt.replace('november',   'November')
+                    dt = dt.replace('december',   'December')
+                    
 
                 elif language.lower() == 'french':
                     dt = dt.replace('janvier',    'January')
