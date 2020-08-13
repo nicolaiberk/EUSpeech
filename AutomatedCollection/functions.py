@@ -496,16 +496,16 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
                 xpathSpeech  = row[14]
                 regexSpeech  = row[15] 
                 regexControl = row[16]
-                date         = row[17]
-                title        = row[18]
-                urlSpeech    = row[19]
+                date         = row[19]
+                title        = row[20]
+                urlSpeech    = row[21]
 
                 if (regexControl != '') and (re.match(regexControl, title) == None):
                     print(f'\n\tNot a speech, skipping {i}')
                     skip+=1
                     continue
                 else:
-                    print("\tFetching speech #", str(i), '... (', inputfile , end = ")\r")
+                    print("\tFetching speech #", str(i), '... (', speaker , end = ")\r")
                 for attempt in range(3):
                     try:
                         req = requests.get(urlSpeech)
