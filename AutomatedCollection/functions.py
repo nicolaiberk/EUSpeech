@@ -16,8 +16,11 @@ from sys import stdout
 import sys
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException
 from langdetect import detect
 from langdetect import detect_langs
+import logging
+import time
 
 csv.field_size_limit(sys.maxsize)
 
@@ -42,7 +45,6 @@ def linkScraper(file,
                 language="english",
                 npage=1,     
                 start=None,
-                mode='w',
                 fmt_url = None
                 ):
     
@@ -73,16 +75,25 @@ def linkScraper(file,
     Writes a csv file [date, country, sender, tt, link] to the provided path.
     '''
 
-
+    
+    # set up logging to file
+    logging.basicConfig(level=logging.INFO,
+                        format='%(message)s',
+                        filename='logbook.log',
+                        filemode='a')
+    
+    now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
+    
+    logging.info('-------------------------------\n\nLinkcollection ', now, ':')
+    
     if start == None:
         start = 1
         
     if fmt_url == None:
         fmt_url = True
-
-    
+        
     # open csvs we want to write to
-    with open(path + file + '.csv', mode=mode, encoding="utf-8") as fo:
+    with open(path + file + '.csv', mode='a', encoding="utf-8") as fo:
         writer=csv.writer(fo, lineterminator='\n')
         
         
@@ -90,7 +101,7 @@ def linkScraper(file,
             dead_writer=csv.writer(dl, lineterminator='\n')
 
             
-            print('\n\nFetching links ' + sender + '...')
+            logging.info('\n\nFetching links ' + sender + '...')
             
             i = 0            
             n = start-1
@@ -123,7 +134,7 @@ def linkScraper(file,
                         if len(tempLinks) == len(tempDates) == len(tempTitles):
                             pass
                         else:
-                            print("Error, Lists of links, dates, and titles are not same length!")
+                            logging.info("Error, Lists of links, dates, and titles are not same length!")
                             run = False
                             break
                         
@@ -192,7 +203,7 @@ def linkScraper(file,
                                     dt = dt.replace('décembre',       'December')
 
                                 elif language.lower() != 'english':                            
-                                        print("Error: unknown date language specified. Choose german, french or italian. do not specify for english.")
+                                        logging.info("Error: unknown date language specified. Choose german, french or italian. do not specify for english.")
                                 
                             if type(strToDates) == list:
                                 for s in strToDates:
@@ -205,13 +216,13 @@ def linkScraper(file,
                             
                             if mindate != None:
                                 if time.strptime(mindate, "%d/%m/%Y") > tmpdt:
-                                    print("\n\tReached ", mindate, " (min), stopping process...")
+                                    logging.info("\n\tReached ", mindate, " (min), stopping process...")
                                     run = False #breaks iteration
                                     break
                             
                             if maxdate != None:
                                 if time.strptime(maxdate, "%d/%m/%Y") < tmpdt:
-                                    print("\n\tReached ", maxdate, " (max), skipping item...")
+                                    logging.info("\n\tReached ", maxdate, " (max), skipping item...")
                                     continue                                    
                                     
                             date = time.strftime("%d-%m-%Y", tmpdt)
@@ -221,7 +232,7 @@ def linkScraper(file,
                                 link = lk.get('href')
                             
                             output = [sender, fetchLink, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
-                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, start, fmt_url, dt, tt, link]
+                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, start, fmt_url, 'text', dt, tt, link]
      
                             writer.writerow(output)
                             dead_writer.writerow("0")
@@ -231,25 +242,25 @@ def linkScraper(file,
                     # exceptions for errors
                     except requests.HTTPError:
                         if attempt < 3:
-                            print('\n\t\t attempt #' + str(attempt) + ' ' + fetchLink + '\n\t\tdid not work (HTTP Error), retrying...')
+                            logging.info('\n\t\t attempt #' + str(attempt) + ' ' + fetchLink + '\n\t\tdid not work (HTTP Error), retrying...')
                             time.sleep(5)
                             continue
                         else:
                             dead_writer.writerow(fetchLink)
-                            print('\n\t\tCollection failed due to HTTPError:\n\t\t' + fetchLink)
+                            logging.info('\n\t\tCollection failed due to HTTPError:\n\t\t' + fetchLink)
                             break
                     except Exception as e:
                         if attempt < 3:
-                            print('\n\t\t attempt #' + str(i) + '/' + str(attempt) + ', ' + fetchLink + '\n\t\tdid not work (', e, '), retrying...')
+                            logging.info('\n\t\t attempt #' + str(i) + '/' + str(attempt) + ', ' + fetchLink + '\n\t\tdid not work (', e, '), retrying...')
                             time.sleep(5)
                         else:
                             dead_writer.writerow(fetchLink)
-                            print('\n\t\tCollection failed due to ', e,':\n\t\t' + fetchLink)
+                            logging.info('\n\t\tCollection failed due to ', e,':\n\t\t' + fetchLink)
                             break
                     
                 
             # message when collection of one url is finished
-            print(str('\nFinished collecting ' + str(i) + ' links for ' + sender))
+            logging.info(str('\nFinished collecting ' + str(i) + ' links for ' + sender))
             
             
 #%% Selenium scraper
@@ -273,8 +284,20 @@ def seleniumScraper(file,
                     maxdate=None,
                     language="english",
                     mode='w',
-                    process = 'scrolling'):
+                    process = 'scrolling',
+                    dt_obj = 'text' # this defines whether to extract a text or datetime attribute from the matched xpath for the dates
+                   ):
 
+    
+        
+    logging.basicConfig(level=logging.INFO,
+                        format='%(message)s',
+                        filename='logbook.log',
+                        filemode='a')
+    
+    now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
+    
+    logging.info('-------------------------------\n\nLinkcollection Selenium ', now, ':')
 
     # setup browser
     stdout.write('Setting up browser...\r')
@@ -298,24 +321,25 @@ def seleniumScraper(file,
     with open(path+file+'.csv', mode=mode, encoding="utf-8") as fo:
         writer=csv.writer(fo, lineterminator = '\n')
         
-#         header = ['speaker', 'url', 'linkbase', 'xpathLink', 'xpathTitle', 'xpathDate', 
-#                   'regexDate', 'strToDate', 'country', 'language', 'selenium', 'xpbutton', 'xpcookie', 'process'
-#                   'xpathSpeech', 'regexSpeech', 'regexControl', 'date', 'title', 'urlSpeech']
-#         writer.writerow(header)
-
         i = 1
         coll = 1
         skip = 0
         x = True
         
-        print('Collecting links...\n')
+        logging.info('Collecting links...\n')
         while x == True:
             for attempt in range(4):
                 stdout.write(f'\t\tCollecting element #{i} using {process} process...\r')
                 try:
                     tt = driver.find_element_by_xpath(xpathTitles.format(i)).text
-                    dt = driver.find_element_by_xpath(xpathDates.format(i)).text
                     lk = driver.find_element_by_xpath(xpathLinks.format(i)).get_attribute('href')
+                    if dt_obj == 'text':
+                        dt = driver.find_element_by_xpath(xpathDates.format(i)).text
+                    elif dt_obj == 'datetime':
+                        dt = driver.find_element_by_xpath(xpathDates.format(i)).get_attribute('datetime')
+                    else:
+                        logging.info(dt_obj, ' not known, define as either "text" or "datetime".')
+                        quit()
                     break
 
                 except NoSuchElementException:
@@ -324,34 +348,66 @@ def seleniumScraper(file,
                         
                         if process == 'button':
                             try:
+                                
+                                for i in [1, 2, 3]:
+                                    driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+                                    time.sleep(1)
+                                
                                 btnext = driver.find_element_by_xpath(xpbutton)
                                 btnext.click()
                                 time.sleep(1)
+                            
                             except NoSuchElementException:
+                                
+                                
                                 stdout.write('Button not found, trying again...\r')
                                 stdout.flush()
+                                
+                                time.sleep(3)
+                                
+                                for i in [1, 2, 3]:
+                                    driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+                                    time.sleep(1)
+                                
                                 btnext = driver.find_element_by_xpath(xpbutton)
                                 btnext.click()
                                 time.sleep(1)
+                                
+                            except ElementNotInteractableException:
+                                
+                                stdout.write('Button not found, trying again...\r')
+                                stdout.flush()
+                                
+                                time.sleep(3)
+                                
+                                for i in [1, 2, 3]:
+                                    driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+                                    time.sleep(1)
+                                
+                                btnext = driver.find_element_by_xpath(xpbutton)
+                                btnext.click()
+                                time.sleep(1)
+                            
+                            
                                 
                         elif process == 'scrolling':
                             driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
                             time.sleep(1)
 
                         else:
-                            print('Unknown process ("{}"), use "button" or "scrolling".'.format(process))
+                            logging.info('Unknown process ("{}"), use "button" or "scrolling".'.format(process))
                         
                     if attempt == 3:
                         i +=1
                         skip +=1
                         
                         if skip == 5:
-                            print('No more elements found. {} elements collected.'.format(coll))
+                            logging.info('No more elements found. {} elements collected.'.format(coll))
                             driver.close()
                             sys.exit()
                     
                     else:
-                        print(f'\n\t\tElement {i} not found, trying again...')
+                        logging.info(f'\n\t\tElement {i} not found, trying again...')
                         
 
             if linkbase != None:
@@ -420,8 +476,8 @@ def seleniumScraper(file,
                     dt = dt.replace('décembre',   'December')
 
 
-            elif language.lower() != 'english':                            
-                    print("Error: unknown language for transformation of months specified. Choose german, french or italian. do not specify for english.")
+                elif language.lower() != 'english':                            
+                        logging.info("Error: unknown language for transformation of months specified. Choose german, french, swedish or italian. do not specify for english.")
 
 
             if type(strToDates) == list:
@@ -437,7 +493,7 @@ def seleniumScraper(file,
 
             if mindate != None:
                 if time.strptime(mindate, "%d/%m/%Y") > tmpdt:
-                    print(f"\n\tReached {mindate},  (min) stopping process after collection of {coll} elements.")
+                    logging.info(f"\n\tReached {mindate},  (min) stopping process after collection of {coll} elements.")
                     driver.close()
                     x = False
                     break
@@ -446,14 +502,14 @@ def seleniumScraper(file,
 
             if maxdate != None:
                 if time.strptime(maxdate, "%d/%m/%Y") < tmpdt:
-                    print("\n\tReached ", maxdate, " (max), skipping item...")
+                    logging.info("\n\tReached ", maxdate, " (max), skipping item...")
                     continue
                 else:
                     pass
 
 
             output = [sender, url, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
-                        country, language, 1, xpbutton, xpcookie, process, xpathSpeech, regexSpeech, regexControl, dt, tt, link]
+                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, '', '', dt_obj, dt, tt, link]
             writer.writerow(output)
             coll += 1
             i += 1
@@ -463,9 +519,18 @@ def seleniumScraper(file,
 
 
 #%% Speechscraper
-def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, timestamp = False):
+def speechScraper(inputfile, linkdir, speechdir, mode = 'w', min_len = 200, timestamp = False):
 
-    print('Start fetching speeches...\n')
+    logging.basicConfig(level=logging.INFO,
+                        format='%(message)s',
+                        filename='logbook.log',
+                        filemode='a')
+    
+    now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
+    
+    logging.info('-------------------------------\n\nSpeechcollection ', now, ':')
+    
+    logging.info('Start fetching speeches...\n')
     
     headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',}
     i=0
@@ -476,7 +541,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
     elif timestamp == False:
         now = ''
     else:
-        print("'timestamp' must be True or False")
+        logging.info("'timestamp' must be True or False")
         quit()
         
     deadlinks=[]
@@ -496,32 +561,32 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
                 xpathSpeech  = row[14]
                 regexSpeech  = row[15] 
                 regexControl = row[16]
-                date         = row[19]
-                title        = row[20]
-                urlSpeech    = row[21]
+                date         = row[20]
+                title        = row[21]
+                urlSpeech    = row[22]
 
                 if (regexControl != '') and (re.match(regexControl, title) == None):
-                    print(f'\n\tNot a speech, skipping {i}')
+                    logging.info(f'\n\tNot a speech, skipping {i} ({speaker}, {url})')
                     skip+=1
                     continue
                 else:
-                    print("\tFetching speech #", str(i), '... (', speaker , end = ")\r")
+                    logging.info("\tFetching speech #", str(i), '... (', speaker)
                 for attempt in range(3):
                     try:
-                        req = requests.get(urlSpeech)
+                        req = requests.get(urlSpeech, headers = headers)
                         tree = html.fromstring(req.text)
 
                     except requests.exceptions.RequestException as e:
-                        print("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
+                        logging.info("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
                         if attempt == 2:
-                            print("Fetching page " + urlSpeech +" for "+ speaker + " "+ urlSpeech + " failed due to " + str(e))
+                            logging.info("Fetching page " + urlSpeech +" for "+ speaker + " "+ urlSpeech + " failed due to " + str(e))
                             deadlinks.append(urlSpeech)
                             mis += 1
                         time.sleep(5)
                     except Exception as e:
-                        print("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
+                        logging.info("Whoops, that went wrong, retrying page "+ urlSpeech +" for "+ speaker)
                         if attempt == 2:
-                            print("Fetching page " + urlSpeech +" for "+ speaker + " failed due to: "+ str(e))
+                            logging.info("Fetching page " + urlSpeech +" for "+ speaker + " failed due to: "+ str(e))
                             deadlinks.append(urlSpeech)
                             mis += 1
                         time.sleep(5)
@@ -530,7 +595,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
                 txt = tree.xpath(xpathSpeech)
            
                 if txt == []:
-                    print('\n\nNo speech found for\n\t', urlSpeech, '\n\t using xpath: \n\n', xpathSpeech)
+                    logging.info('\n\nNo speech found for\n\t', urlSpeech, '\n\t using xpath: \n\n', xpathSpeech)
                     deadlinks.append(urlSpeech)
                     mis += 1
                     continue
@@ -556,7 +621,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
 #                 cleantxt = "".join("".join("".join(cleantxt.split("\n")).split("\r")).split("  "))
                 
                 if len(cleantxt) < min_len:
-                    print('\tVery short speech: ', str(row), '\n\tSKIPPING SPEECH')
+                    logging.info('\tVery short speech: ', str(row), '\n\tSKIPPING SPEECH')
                     deadlinks.append(urlSpeech)
                     mis += 1
                     continue
@@ -572,15 +637,27 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'a', min_len = 200, time
         for dl in deadlinks:
             writer.writerow(dl)  
     
-    print('Finished fetching {} speeches,'.format(str(i-skip)))
-    print('collection of {} links failed,'.format(str(mis)))
-    print('skipped {} links.'.format(str(skip)))
+    logging.info('Finished fetching {} speeches,'.format(str(i-skip)))
+    logging.info('collection of {} links failed,'.format(str(mis)))
+    logging.info('skipped {} links.'.format(str(skip)))
     
 
 
 #%% language detection
-def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'w', timestamp = False):
+def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'a', timestamp = False):
+    
+    logging.basicConfig(level=logging.INFO,
+                        format='%(message)s',
+                        filename='logbook.log',
+                        filemode='a')
+    
+    now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
+    
+    logging.info('-------------------------------\n\nLanguage Detection ', now, ':')
+    
+    
     with open(inputcsv+".csv",mode="r",encoding="utf-8") as fi:
+        
         reader=csv.reader(fi, delimiter = ',')
         
         n_tot = sum(1 for row in reader)
@@ -593,7 +670,7 @@ def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'w', times
         elif timestamp == False:
             now = ''
         else:
-            print("'timestamp' must be True or False")
+            logging.info("'timestamp' must be True or False")
             quit()
         
         if readHeader == True:
@@ -613,28 +690,21 @@ def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'w', times
                              'lenspeech_w',
                              'lenspeech_char'])
                 
-            print('Detecting Languages:')
+            logging.info('Detecting Languages:')
             
             i=0
             for row in reader:
                 i+=1
 
                 
-                date = row[0]
+                date = row[20]
 
-                if len(row) == 5:
-                    origtext = row[4]
-                    completelinks = row[3]
-                    title = row[2]
-                    speaker= row[1]
-                    country = 'Not defined'
-                    
-                elif len(row) == 6:
-                    origtext = row[5]
-                    completelinks = row[4]
-                    title = row[3]
-                    speaker = row[2]
-                    country=row[1]
+
+                origtext = row[23]
+                completelinks = row[22]
+                title = row[21]
+                speaker = row[0]
+                country=row[8]
                 
 
                 raw = origtext.lower() 
@@ -659,8 +729,8 @@ def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'w', times
                 writer.writerow(output)
                 
                 # progress bar
-                bar = str('\t[' + '='*int((i+0.01 / (n_tot/30))) + ' '*(30-int(i / (n_tot/30))) + ']  | ' + str(i) + ' of ' + str(n_tot)+'   ')
+                bar = str('\t[' + '='*int((i*30 / (n_tot))) + ' '*(30-int(i / (n_tot/30))) + ']  | ' + str(i) + ' of ' + str(n_tot)+'   ')
                 sys.stdout.write('%s\r' % bar)
                 sys.stdout.flush()
                 
-            print("Done")
+            logging.info("Done")
