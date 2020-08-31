@@ -75,16 +75,8 @@ def linkScraper(file,
     Writes a csv file [date, country, sender, tt, link] to the provided path.
     '''
 
-    
-    # set up logging to file
-    logging.basicConfig(level=logging.INFO,
-                        format='%(message)s',
-                        filename='logbook.log',
-                        filemode='a')
-    
     now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
     
-    logging.info('-------------------------------\n\nLinkcollection ', now, ':')
     
     if start == None:
         start = 1
@@ -216,13 +208,13 @@ def linkScraper(file,
                             
                             if mindate != None:
                                 if time.strptime(mindate, "%d/%m/%Y") > tmpdt:
-                                    logging.info("\n\tReached ", mindate, " (min), stopping process...")
+                                    logging.info(' '.join(["\n\tReached ", mindate, " (min), stopping process..."]))
                                     run = False #breaks iteration
                                     break
                             
                             if maxdate != None:
                                 if time.strptime(maxdate, "%d/%m/%Y") < tmpdt:
-                                    logging.info("\n\tReached ", maxdate, " (max), skipping item...")
+                                    logging.info(' '.join(["\n\tReached ", maxdate, " (max), skipping item..."]))
                                     continue                                    
                                     
                             date = time.strftime("%d-%m-%Y", tmpdt)
@@ -232,7 +224,7 @@ def linkScraper(file,
                                 link = lk.get('href')
                             
                             output = [sender, fetchLink, linkbase, xpathLinks, xpathTitles, xpathDates, regexDates, strToDates, 
-                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, start, fmt_url, 'text', dt, tt, link]
+                                      country, language, 0, '', '', '', xpathSpeech, regexSpeech, regexControl, start, fmt_url, 'text', date, tt, link]
      
                             writer.writerow(output)
                             dead_writer.writerow("0")
@@ -255,7 +247,7 @@ def linkScraper(file,
                             time.sleep(5)
                         else:
                             dead_writer.writerow(fetchLink)
-                            logging.info('\n\t\tCollection failed due to ', e,':\n\t\t' + fetchLink)
+                            logging.info('\n\t\tCollection failed due to ' + e + ':\n\t\t' + fetchLink)
                             break
                     
                 
@@ -297,7 +289,7 @@ def seleniumScraper(file,
     
     now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
     
-    logging.info('-------------------------------\n\nLinkcollection Selenium ', now, ':')
+    logging.info('\n\nLinkcollection Selenium ' + now + ':')
 
     # setup browser
     stdout.write('Setting up browser...\r')
@@ -338,7 +330,7 @@ def seleniumScraper(file,
                     elif dt_obj == 'datetime':
                         dt = driver.find_element_by_xpath(xpathDates.format(i)).get_attribute('datetime')
                     else:
-                        logging.info(dt_obj, ' not known, define as either "text" or "datetime".')
+                        logging.info(dt_obj + ' not known, define as either "text" or "datetime".')
                         quit()
                     break
 
@@ -502,7 +494,7 @@ def seleniumScraper(file,
 
             if maxdate != None:
                 if time.strptime(maxdate, "%d/%m/%Y") < tmpdt:
-                    logging.info("\n\tReached ", maxdate, " (max), skipping item...")
+                    logging.info("\n\tReached " + maxdate + " (max), skipping item...")
                     continue
                 else:
                     pass
@@ -528,7 +520,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'w', min_len = 200, time
     
     now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
     
-    logging.info('-------------------------------\n\nSpeechcollection ', now, ':')
+    logging.info('\n\nSpeechcollection ' + now + ':')
     
     logging.info('Start fetching speeches...\n')
     
@@ -570,7 +562,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'w', min_len = 200, time
                     skip+=1
                     continue
                 else:
-                    logging.info("\tFetching speech #", str(i), '... (', speaker)
+                    logging.info(f"\tFetching speech #{i}... ({speaker})")
                 for attempt in range(3):
                     try:
                         req = requests.get(urlSpeech, headers = headers)
@@ -595,7 +587,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'w', min_len = 200, time
                 txt = tree.xpath(xpathSpeech)
            
                 if txt == []:
-                    logging.info('\n\nNo speech found for\n\t', urlSpeech, '\n\t using xpath: \n\n', xpathSpeech)
+                    logging.info('\n\nNo speech found for\n\t' + urlSpeech + '\n\t using xpath: \n\n' + xpathSpeech)
                     deadlinks.append(urlSpeech)
                     mis += 1
                     continue
@@ -621,7 +613,7 @@ def speechScraper(inputfile, linkdir, speechdir, mode = 'w', min_len = 200, time
 #                 cleantxt = "".join("".join("".join(cleantxt.split("\n")).split("\r")).split("  "))
                 
                 if len(cleantxt) < min_len:
-                    logging.info('\tVery short speech: ', str(row), '\n\tSKIPPING SPEECH')
+                    logging.info('\tVery short speech: ' + str(row) + '\n\tSKIPPING SPEECH')
                     deadlinks.append(urlSpeech)
                     mis += 1
                     continue
@@ -653,7 +645,7 @@ def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'a', times
     
     now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
     
-    logging.info('-------------------------------\n\nLanguage Detection ', now, ':')
+    logging.info('\n\nLanguage Detection ' + now + ':')
     
     
     with open(inputcsv+".csv",mode="r",encoding="utf-8") as fi:
@@ -690,7 +682,7 @@ def langdetectspeeches(inputcsv,outputcsv, readHeader = False, mode = 'a', times
                              'lenspeech_w',
                              'lenspeech_char'])
                 
-            logging.info('Detecting Languages:')
+            logging.info('Detecting Languages...')
             
             i=0
             for row in reader:

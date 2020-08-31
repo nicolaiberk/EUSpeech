@@ -9,6 +9,7 @@ import os
 import pandas as pd
 from functions import *
 import time
+import logging
 
 # define folders global vars
 linkdir=os.getcwd()+'/Links/'
@@ -19,8 +20,19 @@ countries_collected = 0
 countries_failed = 0
 speeches_collected = 0
 speeches_faied = 0
-report = ''
 
+# setup logging
+
+# set up logging to file
+logging.basicConfig(level=logging.INFO,
+                    format='%(message)s',
+                    filename='logbook.log',
+                    filemode='a')
+
+now  = time.strftime('%d/%m/%Y', time.gmtime(time.time()))
+
+logging.info('\n\n\n----------------------------------------------------------------\n\nCollection ' + now + ':\n\n')
+    
 
 
 # collect new links for each country (starting from last collection date, which needs to be loaded)
